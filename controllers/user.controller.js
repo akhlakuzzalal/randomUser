@@ -60,6 +60,30 @@ const updateAUser = (req, res, next) => {
   res.send(allUsers);
 };
 
+const bulkUpdate = (req, res, next) => {
+  const updateInfo = req.body;
+  if (!updateInfo) {
+    res.send({ message: "No users for update!!" });
+    return;
+  }
+  updateInfo.map((user) => {
+    if (!user.id || isNaN(user?.id)) {
+      res.send({ message: "User Id should be a Number" });
+      return;
+    }
+  });
+  const myArrayFiltered = allUsers.filter((user) =>
+    updateInfo.filter((info) => {
+      // console.log(info);
+      if (user.id === info.id) {
+        return Object.assign(user, info);
+      }
+    })
+  );
+  saveDataOnFile(myArrayFiltered);
+  res.send(myArrayFiltered);
+};
+
 const deleteAUser = (req, res, next) => {
   const { id } = req.params;
   if (Number(id) > allUsers.length) {
@@ -77,4 +101,5 @@ module.exports = {
   addANewUser,
   deleteAUser,
   updateAUser,
+  bulkUpdate,
 };
